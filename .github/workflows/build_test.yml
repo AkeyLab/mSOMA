@@ -1,0 +1,64 @@
+
+name: Build, test
+
+on:
+    release:
+        types: [published]
+    push:
+        branches:
+            - main
+            - dev
+
+    workflow_dispatch:
+
+permissions:
+    contents: write
+
+jobs:
+    docker_amd64:
+        runs-on: ubuntu-22.04
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Docker build test
+              uses: docker/build-push-action@v5
+              with:
+                  context: .
+                  file: ./Dockerfile
+                  target: test
+                  tags: msoma-test
+                  load: true
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+                  push: false
+
+            - name: Run pytest docker
+              uses: addnab/docker-run-action@v3
+              with:
+                  image: msoma-test
+                  options: -v ${{ github.workspace }}:/msoma
+                  run: pytest --docker --cov=src/ --cov-report=xml tests
+
+            - name: Docker build prod
+              uses: docker/build-push-action@v5
+              with:
+                  context: .
+                  target: prod
+                  tags: msoma_prod
+                  load: true
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+
+            - name: Nextflow setup
+              uses: nf-core/setup-nextflow@v1
+
+            - name: Nextflow test
+              run: |
+                cd examples
+                nextflow run -with-docker msoma_prod --sampleSheet sample_sheet_chrM.tsv --outputDir nextflow_output mSOMA.nf
+                cd ..
