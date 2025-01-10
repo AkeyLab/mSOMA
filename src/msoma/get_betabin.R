@@ -7,7 +7,7 @@ suppressMessages(library(tidyverse))
 suppressMessages(library(Biostrings))
 suppressMessages(library(dplyr))
 suppressMessages(library(qvalue))
-options(warn=1)
+#options(warn=1)
 
 estBetaParams <- function(mu, var) {
   alpha = ((1 - mu) / var - 1 / mu) * mu ^ 2
