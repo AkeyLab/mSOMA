@@ -1,0 +1,6 @@
+pytest>=6.0
+pytest-cov
+pandas
+pysam
+scipy
+statsmodels
