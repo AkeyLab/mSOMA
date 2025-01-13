@@ -7,11 +7,41 @@ Software supporting BioRxiv preprint: https://doi.org/10.1101/2025.01.07.631808
 
 ![Workflow](docs/pngs/workflow.png)
 
-main branch coverage: [![codecov](https://codecov.io/github/AkeyLab/mSOMA/branch/main/graph/badge.svg?token=6KOZ0ECLSO)](https://codecov.io/github/AkeyLab/MtSOMA)
 
-dev branch coverage: [![codecov](https://codecov.io/github/AkeyLab/mSOMA/branch/dev/graph/badge.svg?token=6KOZ0ECLSO)](https://codecov.io/github/AkeyLab/MtSOMA)
+## Installation
+mSOMA is implemented as a python package, but makes subprocess calls to external dependencies such as samtools, and uses an R script for MLE calculation.
+mSOMA currently only works on linux and mac amd64 architectures, because it depends on [bamutil](https://anaconda.org/bioconda/bamutil) which only runs on those platforms.
 
-After installation, `msoma` has a CLI:
+The recommended way to install mSOMA is from [bioconda](https://anaconda.org/bioconda/msoma) with the below command, otherwise building using the Docker image is possible, instructions below:
+
+`conda create --name msoma_env -c bioconda -c conda-forge msoma`
+
+Then activate the environment with:
+
+`conda activate msoma_env`
+
+Then ensure `mSOMA` has access to the appropriate dependencies run:
+`msoma check-dependencies`
+
+Which should output:
+```bash
+$ msoma check-dependencies
+Dependency found   external : Rscript: path: /path/to/.conda/envs/test_env/bin/Rscript
+Dependency found   external : samtools: path: /path/to/.conda/envs/test_env/bin/samtools
+Dependency found   external : bam: path: /path/to/.conda/envs/test_env/bin/bam
+Dependency found   external : awk: path: /usr/bin/awk
+Dependency found   R-library: survcomp
+Dependency found   R-library: data.table
+Dependency found   R-library: VGAM
+Dependency found   R-library: argparse
+Dependency found   R-library: bbmle
+Dependency found   R-library: tidyverse
+Dependency found   R-library: Biostrings
+Dependency found   R-library: dplyr
+Dependency found   R-library: qvalue
+```
+
+After installation, `msoma` has a CLI you can access to get help:
 ```
 $ msoma
 Usage: msoma [OPTIONS] COMMAND [ARGS]...
@@ -27,24 +57,6 @@ Commands:
   count               Create counts file from BAM file for somatic...
   merge-counts        Merge count files into a single count file
   mle                 Calculate p-values for each locus using maximum...
-```
-
-Ensure that the required python, R, and external dependencies are available by running:
-```
-$ msoma check-dependencies
-Dependency found   external : Rscript: path: /path/to/.conda/envs/test_env/bin/Rscript
-Dependency found   external : samtools: path: /path/to/.conda/envs/test_env/bin/samtools
-Dependency found   external : bam: path: /path/to/.conda/envs/test_env/bin/bam
-Dependency found   external : awk: path: /usr/bin/awk
-Dependency found   R-library: survcomp
-Dependency found   R-library: data.table
-Dependency found   R-library: VGAM
-Dependency found   R-library: argparse
-Dependency found   R-library: bbmle
-Dependency found   R-library: tidyverse
-Dependency found   R-library: Biostrings
-Dependency found   R-library: dplyr
-Dependency found   R-library: qvalue
 ```
 
 First `msoma count` should be run on the input `bam` file. There are many parameters, but sensible defaults.
@@ -104,6 +116,10 @@ Options:
   -h, --help               Show this message and exit.
 ```
 
+For a concrete example, look at the `run_w_conda.sh` script in the `examples` folder of this repo which includes example bam data.
+This is a shell script that assumes you already have `msoma` installed and available on your path.
+
+The is also an example for running `mSOMA` on a SLURM cluster with the nextflow workflow management tool in `run_SLURM_example.sh`
 
 ## Building with Docker
 
@@ -118,3 +134,5 @@ docker run --rm msoma-test
 ```
 
 The `docker build` command can take ~30 minutes to complete to first time, but the installation of the dependencies is cached for subsequent builds.
+
+The GHA workflow yaml does this steps.
