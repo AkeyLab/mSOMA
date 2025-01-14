@@ -116,10 +116,8 @@ Options:
   -h, --help               Show this message and exit.
 ```
 
-For a concrete example, look at the `run_w_conda.sh` script in the `examples` folder of this repo which includes example bam data.
+For a concrete example, look at the `run_msoma.sh` script in the `examples/` folder of this repo which includes example bam data.
 This is a shell script that assumes you already have `msoma` installed and available on your path.
-
-The is also an example for running `mSOMA` on a SLURM cluster with the nextflow workflow management tool in `run_SLURM_example.sh`
 
 ## Building with Docker
 
@@ -135,4 +133,4 @@ docker run --rm msoma-test
 
 The `docker build` command can take ~30 minutes to complete to first time, but the installation of the dependencies is cached for subsequent builds.
 
-The GHA workflow yaml does this steps.
+The GHA workflow yaml does these steps.

@@ -1,30 +1,29 @@
-
+## Installing mSOMA
 mSOMA is a collection of multiple tools, scripts, and programming languages
-that have been packaged together to provide a docker image
-that should make it easier to get this tool up and running on your system.
+that have been packaged together with conda, follow the installation instructions
+in the main README.md file to install the package.
 
-## Running the Docker image from Docker Hub
+## Example data
 
-To run the docker image from Docker Hub, you can run the following command:
+Included in this `examples/` directory is example data created by
+using the [ART](https://www.niehs.nih.gov/research/resources/software/biostatistics/art)
+tool to simulate RNA-seq data from chrM on GRCh38 in the `synthetic_data/` folder.
 
-```docker run -rm rbiermanpu/somatic-mutations:dev```
+The following synthetic data files are included for usage with the `msoma` cli tool:
+* chrM_seed1_ART.bam
+* chrM_seed1_ART.bam.bai
+* chrM.bed
+* chrM.fa
 
-## Building and running the Docker image locally
+## Running mSOMA on the example data after installation
 
-If you want to build the docker image locally, you can do so by running
-the following command from the root of the repository where the
-Dockerfile is located. Note that you need to have docker installed and
-the build process will take a while to complete, 20+ minutes, and the image takes approximately 2 GB of space.
+After you have `msoma` installed, you can run the following command to
+run both the `msoma count` and `msoma mle` commands on the example data:
 
-```docker build -t local_betabin --target prod .```
+```bash
+sh run_msoma.sh
+```
 
-Then you can run the docker image by running the following command:
-```docker run --rm local_betabin betabin```
+You can first run `msoma check-dependencies` to ensure that all dependencies are installed before running the `run_msoma.sh` script.
 
-which should output the help message of the betabin tool.
-
-You can run the example mitochondrial data by running the following command from within the examples directory (`cd examples`):
-```docker run --rm -v $PWD:/betabinomial local_betabin count --fasta synthetic_data/chrM.fa --bed synthetic_data/chrM.bed --seq-length 150 -o test_out.counts.gz synthetic_data/chrM_seed1_ART.bam```
-
-This will run the betabin tool on the example data and output
-the results to the current directory with prefix `test_out`.
+Note that running `msoma` on the syntethic data will result in some NaN P_VALs. This is due to the small size of the data and the fact that the data is synthetic. Running `msoma` on real data should not result in NaN P_VALs.
