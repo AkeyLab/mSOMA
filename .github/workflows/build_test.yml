@@ -75,7 +75,7 @@ jobs:
               if: github.ref_name != 'main' && github.event_name != 'pull_request'
               with:
                   username: rbiermanpu
-                  password: ${{ secrets.DOCKER_TOKEN }}
+                  password: ${{ secrets.DOCKERHUB_TOKEN }}
 
             - name: Docker push
               uses: docker/build-push-action@v5
