@@ -64,5 +64,8 @@ ENTRYPOINT ["pytest", "--docker", "--cov=src/", "--cov-report=xml", "--cov-repor
 # Production build stage to run MtSOMA
 # Switch back to non-root user for execution
 FROM base as prod
+ENV R_LIBS_USER=/usr/local/lib/R/site-library
+ENV R_ENVIRON_USER=
+ENV R_PROFILE_USER=
 RUN pip3 install .
 USER 1001
