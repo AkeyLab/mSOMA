@@ -3,7 +3,7 @@ name: Build, test
 
 on:
     release:
-        types: [published]
+        types: [created]
     push:
         branches:
             - main
@@ -19,6 +19,14 @@ jobs:
         runs-on: ubuntu-22.04
 
         steps:
+            - name: Debug info
+              run: |
+                echo "event_name: ${{ github.event_name }}"
+                echo "ref: ${{ github.ref }}"
+                echo "ref_name: ${{ github.ref_name }}"
+                echo "head_ref: ${{ github.head_ref }}"
+                echo "base_ref: ${{ github.base_ref }}"
+
             - name: Checkout
               uses: actions/checkout@v4
 
@@ -35,7 +43,7 @@ jobs:
                   load: true
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
-                  push: false
+                  platforms: linux/amd64
 
             - name: Run pytest docker
               uses: addnab/docker-run-action@v3
@@ -53,6 +61,7 @@ jobs:
                   load: true
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
+                  platforms: linux/amd64
 
             - name: Nextflow setup
               uses: nf-core/setup-nextflow@v1
@@ -62,3 +71,34 @@ jobs:
                 cd examples
                 nextflow run -with-docker msoma_prod --sampleSheet sample_sheet_chrM.tsv --outputDir nextflow_output mSOMA.nf
                 cd ..
+
+            - name: Login to DockerHub
+              uses: docker/login-action@v3
+              if: github.ref_name != 'main' && github.event_name != 'pull_request'
+              with:
+                  username: rbiermanpu
+                  password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+            - name: Docker push
+              uses: docker/build-push-action@v5
+              if: github.ref_name != 'main' && github.event_name != 'pull_request'
+              with:
+                  context: .
+                  target: prod
+                  tags: rbiermanpu/msoma:${{ github.ref_name }}
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+                  platforms: linux/amd64
+                  push: true
+
+            - name: Docker build and push as "latest" if performing a release
+              uses: docker/build-push-action@v5
+              if: github.event_name == 'release'
+              with:
+                  context: .
+                  target: prod
+                  tags: rbiermanpu/msoma
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+                  platforms: linux/amd64
+                  push: true
