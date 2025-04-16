@@ -43,6 +43,7 @@ jobs:
                   load: true
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
+                  platforms: linux/amd64
 
             - name: Run pytest docker
               uses: addnab/docker-run-action@v3
@@ -60,6 +61,7 @@ jobs:
                   load: true
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
+                  platforms: linux/amd64
 
             - name: Nextflow setup
               uses: nf-core/setup-nextflow@v1
@@ -84,15 +86,17 @@ jobs:
                   context: .
                   target: prod
                   tags: rbiermanpu/msoma:${{ github.ref_name }}
-                  push: true
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
+                  platforms: linux/amd64
+                  push: true
 
             - name: Docker build and push as "latest" if performing a release
               uses: docker/build-push-action@v5
               if: github.event_name == 'release'
               with:
                   context: .
+                  target: prod
                   tags: rbiermanpu/msoma
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
