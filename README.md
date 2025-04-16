@@ -119,6 +119,22 @@ Options:
 For a concrete example, look at the `run_msoma.sh` script in the `examples/` folder of this repo which includes example bam data.
 This is a shell script that assumes you already have `msoma` installed and available on your path.
 
+## Using mSOMA from docker containers on dockerhub
+
+Visit https://hub.docker.com/r/rbiermanpu/msoma/tags to see the available versions for usage.
+
+The docker image is built from the `Dockerfile` in this repo, and includes all the dependencies needed to run mSOMA.
+
+
+You can run the example nextflow pipeline from within the `examples/` directory with either `-with-docker` or `-with-singularity`.
+
+```bash
+nextflow run -with-singularity rbiermanpu/msoma --sampleSheet sample_sheet_chrM.tsv --outputDir nextflow_output mSOMA.nf
+```
+
+The exact version of the docker image can be specified such as `rbiermanpu/msoma:0.1.2`
+
+
 ## Building with Docker
 
 To run pytests locally that require external dependencies, `like samtools`,
@@ -134,3 +150,12 @@ docker run --rm msoma-test
 The `docker build` command can take ~30 minutes to complete to first time, but the installation of the dependencies is cached for subsequent builds.
 
 The GHA workflow yaml does these steps.
+
+## Debugging
+
+* One error we've seen so far is a user's personal R packages being used after installing the conda environment which ended up being an issue of using the msoma installaed executable but not activating the conda environment.
+
+* A similar situation of R looking in the wrong location occurred when running the docker image with singularity, 
+but this issue  should be resolved in the v0.1.2 release of mSOMA.
+
+* Please open an issue if you encounter any problems with the installation or running of mSOMA.
