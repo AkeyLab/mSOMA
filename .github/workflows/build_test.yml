@@ -65,7 +65,9 @@ jobs:
                   
             - name: Setup java
               uses: actions/setup-java@v4
-              
+              with:
+                distribution: 'temurin'
+                java-version: '21'
 
             - name: Nextflow setup
               uses: nf-core/setup-nextflow@v1
