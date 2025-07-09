@@ -34,15 +34,18 @@ As part of the GitHub Actions CI/CD pipeline, we have included a `nextflow`
 script that runs `msoma` on the example data using the `msoma` docker image that
 is created earlier in the msoma pipeline.
 
-Docker is used here instead of conda to ensure the GHA pipeline runs
-on the current version of the software and all dependencies are installed.
-Installing from bioconda would not reflect the current version of the software
-under development.
+```
+nextflow run \
+    -with-singularity rbiermanpu/msoma \
+    --sampleSheet sample_sheet_chrM.tsv \
+    --outputDir nextflow_output mSOMA.nf
+```
+
+This nextflow workflow could also be run `-with-conda`.
 
 The following files are part of the `nextflow` pipeline:
 * `mSOMA.nf`
 * `sample_sheet_chrM.tsv`
 
 The `mSOMA.nf` nextflow script can also be used as a starting point
-for running `msoma` on your own data, but I'd recommend using nextflow
-with conda environments for a more reproducible pipeline.
+for running `msoma` on your own data.
